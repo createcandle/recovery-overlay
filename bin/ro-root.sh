@@ -33,3 +33,16 @@ echo "downloading and running upgrade script" >> /dev/kmsg
 echo "downloading and running upgrade script" >> /boot/candle_log.txt
 echo "downloading and running upgrade script"
 wget http://www.candlesmarthome.com/tools/system_update.sh -O - | sh
+
+if [ -d "/boot" ]; then
+    
+    echo "RESTORING NORMAL CMDLINE.TXT"
+    echo "RESTORING NORMAL CMDLINE.TXT" >> /dev/kmsg
+
+    mv /boot/cmdline.txt /boot/cmdline-maybe.txt
+    rm /boot/cmdline.txt
+    cp /boot/cmdline-candle.txt /boot/cmdline.txt
+
+else
+   echo "ERROR, /BOOT WAS NOT MOUNTED" >> /dev/kmsg
+fi
