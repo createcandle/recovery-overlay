@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set +e
+
 echo "CANDLE RECOVERY"
 echo "in Candle Recovery ro-root.sh" >> /dev/kmsg
 echo "Starting Candle Update and Recovery" >> /boot/candle_log.txt
