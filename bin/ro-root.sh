@@ -1,10 +1,8 @@
 #!/bin/sh
 
-set +e
-
 echo "CANDLE RECOVERY"
 echo "in Candle Recovery ro-root.sh" >> /dev/kmsg
-echo "Starting Candle Update and Recovery" >> /boot/candle_log.txt
+echo "ro-root. Starting Candle Update and Recovery" >> /boot/candle_log.txt
 
 early="Candle restore: Howdy world!"
 if grep -qs "(mmcblk0p1): Volume was not properly unmounted." dmesg;
@@ -15,10 +13,13 @@ then
   fsck.vfat /dev/mmcblk0p1 -a -v -V
 fi
 
+mkdir -p /boot
 if [ -d "/boot" ]; then
   mount -t vfat /dev/mmcblk0p1 /boot
   #ls /dev > /boot/ls_dev.txt
+fi
 
+if [ -d /boot ]; then
   # write results from early disk checks to log
   if [ -n "$early" ]; then
     echo "$early" >> /boot/candle_log.txt
@@ -34,17 +35,13 @@ sleep 5
 echo "downloading and running upgrade script" >> /dev/kmsg
 echo "downloading and running upgrade script" >> /boot/candle_log.txt
 echo "downloading and running upgrade script"
-wget http://www.candlesmarthome.com/tools/system_update.sh -O - | sh
+#wget http://www.candlesmarthome.com/tools/system_update -O - | sh
 
-if [ -d "/boot" ]; then
-    
-    echo "RESTORING NORMAL CMDLINE.TXT"
-    echo "RESTORING NORMAL CMDLINE.TXT" >> /dev/kmsg
-
-    mv /boot/cmdline.txt /boot/cmdline-maybe.txt
-    rm /boot/cmdline.txt
-    cp /boot/cmdline-candle.txt /boot/cmdline.txt
-
-else
-   echo "ERROR, /BOOT WAS NOT MOUNTED" >> /dev/kmsg
+if [ -f /boot/cmdline-rec.txt ]; then
+  rm /boot/cmdline-rec.txt
 fi
+mv /boot/cmdline.txt /boot/cmdline-rec.txt
+cp /boot/cmdline-candle.txt /boot/cmdline.txt
+
+exec /sbin/init
+END
