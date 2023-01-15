@@ -1,0 +1,29 @@
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
+if [ "$PS1" ]; then
+	if [ "`id -u`" -eq 0 ]; then
+		export PS1='# '
+	else
+		export PS1='$ '
+	fi
+fi
+
+export EDITOR='/bin/vi'
+
+# Source configuration files from /etc/profile.d
+for i in /etc/profile.d/*.sh ; do
+	if [ -r "$i" ]; then
+		. $i
+	fi
+done
+
+if [ -f /boot/candle_update.txt ]; then 
+    echo "DETECTED CANDLE_UPDATE.TXT, will rename and run it"
+    mv /boot/candle_update.txt /boot/candle_update.sh
+    chmod +x /boot/candle_update.sh 
+    . /boot/candle_update.sh
+else
+    #echo "DID NOT FIND LOCAL CANDLE UPDATE SCRIPT"
+fi 
+
+unset i
