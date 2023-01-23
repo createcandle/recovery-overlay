@@ -4,9 +4,9 @@ export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 
 if [ "$PS1" ]; then
     if [ "`id -u`" -eq 0 ]; then
-        export PS1='# '
+        export PS1='\w # '
     else
-        export PS1='$ '
+        export PS1='\w $ '
     fi
 fi
 
@@ -18,45 +18,5 @@ for i in /etc/profile.d/*.sh ; do
         . $i
     fi
 done
-
-if [ -d /boot ]; then
-	if [ -f /boot/candle_update.txt ]; then 
-	    echo "DETECTED CANDLE_UPDATE.TXT, will rename and run it"
-	    mv /boot/candle_update.txt /boot/candle_update.sh
-	    chmod +x /boot/candle_update.sh 
-	    . /boot/candle_update.sh
-	else
-	    echo "DID NOT FIND LOCAL CANDLE UPDATE SCRIPT. WILL ATTEMPT DOWNLOAD OF LATEST VERSION."
-
-	    for i in {1..30}
-	    do
-		#echo "current hostname: $(hostname -I)"
-		if [ "$(hostname -i)" = "" ]
-		then
-		    echo "profile: no network yet $i" >> /dev/kmsg
-		    echo "no network yet $i"
-		    sleep 1    
-		else
-		    echo "profile: IP address detected: $(hostname -i)" >> /dev/kmsg
-
-		    wget -c https://www.candlesmarhome.com/tools/candle_update
-
-		    if [ -f ./candle_update ]; then
-			if [ -f ./candle_update.sh ]; then
-			    echo "removing old candle_update.sh file"
-			    rm candle_update.sh
-			fi
-			echo "moving candle_update to candle_update.sh"
-			mv candle_update candle_update.sh
-			chmod +x candle_update.sh
-			echo "starting candle_update.sh"
-			. ./candle_update.sh
-		    fi
-		    break
-		fi
-	    done
-
-	fi 
-fi
 
 unset i

@@ -1,0 +1,92 @@
+#!/bin/bash
+echo "IN RC.LOCAL" 
+if [ -f /dev/kmsg ]; then
+    echo "IN RC.LOCAL" >> /dev/kmsg
+fi
+
+# continue on errors
+set +e
+
+mkdir -p /root
+cd /root
+
+# first,let's make sure to back  go back to the normal system on a reboot
+if [ ! -f /boot/cmdline-update.txt ]; then
+  mv /boot/cmdline.txt /boot/cmdline-update.txt
+fi
+cp /boot/cmdline-candle.txt /boot/cmdline.txt
+
+
+#touch /boot/RC_LOCAL_WAS_HERE.txt
+
+if [ -d /boot ]; then
+    echo "" >> /boot/candle_log.txt
+    echo "UPDATE: RC: START" >> /boot/candle_log.txt
+
+
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
+    if [ -e "/boot/rotate180.txt" ]; then
+        /bin/ply-image /boot/splash_updating180.png
+    else
+        /bin/ply-image /boot/splash_updating.png
+    fi
+fi
+
+
+	if [ -f /boot/candle_update.txt ]; then 
+	    echo "DETECTED CANDLE_UPDATE.TXT, will rename and run it"
+	    mv /boot/candle_update.txt /boot/candle_update.sh
+	    chmod +x /boot/candle_update.sh 
+	    . /boot/candle_update.sh
+	else
+	    echo "DID NOT FIND LOCAL CANDLE UPDATE SCRIPT. WILL ATTEMPT DOWNLOAD OF LATEST VERSION."
+                    
+                    #sleep 15
+
+                    if [ -f candle_update ]; then
+                        rm candle_update
+                    fi
+
+                    if [ -f /dev/kmsg ]; then
+                        echo "UPDATE: RC: WILL TRY TO DOWNLOAD CANDLE UPDATE SCRIPT" >> /dev/kmsg
+                    fi
+
+                    wget -c https://www.candlesmarthome.com/tools/candle_update -O candle_update
+                    
+                    if [ ! -s candle_update ]; then
+                        echo "update file exists, but is empty" >> /boot/candle_log.txt
+                        wget -c https://www.candlesmarthome.com/tools/candle_update -O candle_update --no-check-certificate
+                    fi
+
+                    if [ -f ./candle_update ]; then
+                        echo "Update script was downloaded" >> /boot/candle_log.txt
+                        if [ -f ./candle_update.sh ]; then
+                            echo "removing old candle_update.sh file"
+                            rm candle_update.sh
+                        fi
+                        echo "renaming candle_update to candle_update.sh"
+                        mv candle_update candle_update.sh
+                        if [ -f ./candle_update.sh ]; then
+                          chmod +x candle_update.sh
+                          echo "starting candle_update.sh" >> /boot/candle_log.txt
+                          . ./candle_update.sh
+                        fi
+                    fi
+
+
+	fi
+        echo "UPDATE: RC: END"  >> /boot/candle_log.txt
+
+fi
+
+if [ -f /boot/developer.txt ]; then
+    sleep 90
+fi
+
+if grep -q mmcblk0p2 /boot/cmdline.txt; then
+    echo "UPDATE: RC: cmdline looks good. Rebooting."
+    reboot -f
+else
+    echo "Error, cmdline does not mention second partition (system)"
+    echo "UPDATE: rc.local: error, at end of update but cmdline.txt does not mention second partition. SSH will be enabled on next boot (root@candleupdate.local : smarthome)" >> /boot/candle_log.txt
+fi
