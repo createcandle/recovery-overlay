@@ -88,7 +88,7 @@ if [ -d /boot ]; then
     else
         echo "Error, cmdline does not mention second partition (system)"
         echo "UPDATE: rc.local: error, mmcblk0p2 not in cmdline.txt. Enabling SSH" >> /boot/candle_log.txt
-        touch /boot/candle_ssh.txt
+        touch /boot/candle_ssh_once.txt
     fi
 
 

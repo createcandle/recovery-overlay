@@ -27,7 +27,7 @@ null::sysinit:/sbin/mdev -s
 ::sysinit:/bin/mkdir -p /boot
 ::sysinit:/bin/mount -t vfat /dev/mmcblk0p1 /boot
 ::sysinit:/bin/mkdir -p /mnt/userpart
-::sysinit:/bin/mount -t ext4 /dev/mmcblk0p4 /mnt/userpart
+#::sysinit:/bin/mount -t ext4 /dev/mmcblk0p4 /mnt/userpart
 
 null::sysinit:/bin/ln -sf /proc/self/fd /dev/fd
 null::sysinit:/bin/ln -sf /proc/self/fd/0 /dev/stdin

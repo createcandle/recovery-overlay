@@ -5,7 +5,9 @@
 
 # Make sure the ssh-keygen progam exists
 [ -f /usr/bin/ssh-keygen ] || exit 0
-[ -f /boot/developer.txt ] || exit 0
+if [ ! -f /boot/developer.txt ] && [ ! -f /boot/candle_ssh.txt ] && [ ! -f /boot/candle_ssh_once.txt ]; then
+    exit 0
+fi
 
 umask 077
 
