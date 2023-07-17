@@ -10,7 +10,7 @@ set +e
 mkdir -p /root
 cd /root
 
-# first,let's make sure to back  go back to the normal system on a reboot
+# first,let's make sure to go back to the normal system on a reboot
 if [ ! -f /boot/cmdline-update.txt ]; then
   mv /boot/cmdline.txt /boot/cmdline-update.txt
 fi
