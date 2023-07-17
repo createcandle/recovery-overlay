@@ -10,16 +10,17 @@ set +e
 mkdir -p /root
 cd /root
 
-# first,let's make sure to go back to the normal system on a reboot
-if [ ! -f /boot/cmdline-update.txt ]; then
-  mv /boot/cmdline.txt /boot/cmdline-update.txt
-fi
-cp /boot/cmdline-candle.txt /boot/cmdline.txt
 
-
-#touch /boot/RC_LOCAL_WAS_HERE.txt
 
 if [ -d /boot ]; then
+
+    # first,let's make sure to go back to the normal system on a reboot
+    if [ ! -f /boot/cmdline-update.txt ]; then
+      mv /boot/cmdline.txt /boot/cmdline-update.txt
+    fi
+    cp /boot/cmdline-candle.txt /boot/cmdline.txt
+
+
     echo "" >> /boot/candle_log.txt
     echo "UPDATE: RC: START" >> /boot/candle_log.txt
 
