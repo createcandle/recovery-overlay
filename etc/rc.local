@@ -34,11 +34,13 @@ if [ -d /boot ]; then
 
     if [ -f /boot/candle_update.txt ]; then 
         echo "DETECTED CANDLE_UPDATE.TXT, will rename and run it"
+        echo "UPDATE: RC: running candle_update.txt" >> /boot/candle_log.txt
         mv /boot/candle_update.txt /boot/candle_update.sh
         chmod +x /boot/candle_update.sh 
         . /boot/candle_update.sh
     else
         echo "DID NOT FIND LOCAL CANDLE UPDATE SCRIPT. WILL ATTEMPT DOWNLOAD OF LATEST VERSION."
+        echo "UPDATE: RC: no candle_update.txt, will attempt download of latest update script" >> /boot/candle_log.txt
 
         if [ -f candle_update ]; then
             rm candle_update
